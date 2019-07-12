@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManager;
@@ -33,16 +34,36 @@ import java.io.IOException;
 public class MainActivity extends Activity {
 
     private final String TAG = MainActivity.class.getCanonicalName();
+    /*
     private static final String ECHO_PIN_NAME = "BCM20";
     private static final String TRIGGER_PIN_NAME = "BCM16"; //antes 21
     private static final int INTERVALO_ENTRE_LECTURAS = 3000;
     private Gpio mEcho;
     private Gpio mTrigger;
     int hazAlgo;
+    */
+
+    private void sendCommandArduino(ArduinoUart uart, String command) {
+        Log.d(TAG, "Mandado a Arduino: " + command);
+        uart.escribir(command);
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Log.w(TAG, "Error en sleep()", e);
+        }
+        String s = uart.leer();
+        Log.d(TAG, "Recibido de Arduino: " + s);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "Lista de UART disponibles: " + ArduinoUart.disponibles());
+        ArduinoUart uart = new ArduinoUart("UART0", 115200);
+        sendCommandArduino(uart, "H");
+        sendCommandArduino(uart, "D");
+
+        /*
         PeripheralManager manager = PeripheralManager.getInstance();
         try {
             mEcho = manager.openGpio(ECHO_PIN_NAME);
@@ -57,8 +78,10 @@ public class MainActivity extends Activity {
         } catch (IOException e) {
             Log.e(TAG, "Error en PeripheralIO API", e);
         }
+        */
     }
 
+    /*
     private void llamarLeerDistancia() {
         new Handler().postDelayed(new Runnable() {
             @Override
@@ -97,5 +120,6 @@ public class MainActivity extends Activity {
         Log.i(TAG, "distancia (Android Things): " + distancia + " cm");
         //return distancia;
     }
+    */
 
 }
